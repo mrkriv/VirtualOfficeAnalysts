@@ -1,0 +1,61 @@
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using MySql.Data.MySqlClient;
+
+namespace LoginServer
+{
+    public partial class DataBaseInterface
+    {
+<?for (int i = 1; i<7; i++){
+<?string tupleType = "";
+<?for(int j=0;j<=i;j++){
+<?tupleType+="T" + (j+1).ToString();
+<?if(j<i)tupleType += ", ";
+<?}
+        public Tuple<<?echo(tupleType);?>> Get<<?echo(tupleType);?>>(string query, params object[] args)
+        {
+            using (MySqlCommand cmd = new MySqlCommand(string.Format(query, args), Connection))
+            using (var reader = cmd.ExecuteReader())
+            {
+                if (reader == null || !reader.HasRows)
+                    return null;
+
+                reader.Read();
+                return new Tuple<<? echo(tupleType);?>>(
+<?for(int j=0;j<=i;j++){
+                    ReadValue<T<?echo(j+1);?>>(reader, <?echo(j);?>)<?if(j<i)echo(",");
+
+<?}
+                );
+            }
+        }
+
+        public List<TResult> GetArray<<?echo(tupleType);?>, TResult>(Func<Tuple<<?echo(tupleType);?>>, TResult> selector, string query, params object[] args)
+        {
+            return GetArray<<?echo(tupleType);?>>(query, args).Select(selector).ToList();
+        }
+
+        public List<Tuple<<? echo(tupleType);?>>> GetArray<<?echo(tupleType);?>>(string query, params object[] args)
+        {
+            var result = new List<Tuple<<? echo(tupleType);?>>>();
+
+            using (MySqlCommand cmd = new MySqlCommand(string.Format(query, args), Connection))
+            using (var reader = cmd.ExecuteReader())
+                if (reader.HasRows)
+                    while (reader.Read())
+                    {
+                        result.Add(new Tuple<<? echo(tupleType);?>>(
+<?for(int j=0;j<=i;j++){
+                            ReadValue<T<?echo(j+1);?>>(reader, <?echo(j);?>)<?if(j<i)echo(",");
+
+<?}
+                        ));
+                    }
+
+            return result;
+        }
+
+<?}
+    }
+}

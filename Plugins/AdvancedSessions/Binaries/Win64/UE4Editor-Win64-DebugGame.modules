@@ -1,0 +1,9 @@
+{
+	"Changelist" : 3224400,
+	"CompatibleChangelist" : 3195953,
+	"BuildId" : "66154a22-a4f9-4ffc-b482-a447d00886b4",
+	"Modules" : 
+	{
+		"AdvancedSessions" : "UE4Editor-AdvancedSessions-Win64-DebugGame.dll"
+	}
+}
