@@ -1,11 +1,6 @@
 # Visual Studio 2015 user specific files
 .vs/
 
-LoginServer/src/LoginServer/obj/*
-LoginServer/.vs/*
-!LoginServer/*.sln
-!LoginServer/src/CodeGenerator.exe
-
 # Visual Studio 2015 database file
 *.VC.db
 
@@ -70,3 +65,9 @@ Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+LoginServer/src/LoginServer/obj/*
+LoginServer/.vs/*
+
+!LoginServer/*.sln
+!LoginServer/src/CodeGenerator.exe
