@@ -35,10 +35,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "GitSourceControl",
-			"Enabled": false
-		},
-		{
 			"Name": "SteamVR",
 			"Enabled": false
 		},
