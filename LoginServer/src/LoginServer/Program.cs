@@ -14,6 +14,7 @@ namespace LoginServer
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseUrls("http://192.168.1.44:5000")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()

@@ -30,5 +30,10 @@ namespace LoginServer
         {
             OpenSessions.Remove(RoomId);
         }
+
+        public override string ToString()
+        {
+            return RoomId.ToString();
+        }
     }
 }

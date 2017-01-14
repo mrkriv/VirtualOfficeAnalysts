@@ -1,7 +1,9 @@
 ﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
   <PropertyGroup Label="Configuration">
-    <PreBuildEvent>..\..\..\..\CodeGenerator.exe input=..\..\..\DataBaseInterface.generate.template output=..\..\..\DataBaseInterface.generate.cs</PreBuildEvent>
+    <PreBuildEvent>cd ..\..\
+..\CodeGenerator.exe input=DataBaseInterface.generate.template output=DataBaseInterface.generate.cs</PreBuildEvent>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -71,4 +73,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

@@ -50,18 +50,6 @@ namespace LoginServer
 
         public T ReadValue<T>(System.Data.Common.DbDataReader reader, int index)
         {
-            //var sw = new Dictionary<Type, Func<object>> {
-            //    { typeof(Int16), () => reader.GetInt16(index) },
-            //    { typeof(Int32), () => reader.GetInt32(index) },
-            //    { typeof(Int64), () => reader.GetInt64(index) },
-            //    { typeof(byte), () => reader.GetByte(index) },
-            //    { typeof(bool), () => reader.GetBoolean(index) },
-            //    { typeof(string), () => reader.GetString(index) },
-            //    { typeof(int), () => reader.GetValue(index) },
-            //};
-
-            //return sw.ContainsKey(typeof(T)) ? sw[typeof(T)]() as T : default(T);
-
             object obj = reader.GetValue(index);
             if (obj is T)
                 return (T)obj;
