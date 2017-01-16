@@ -68,7 +68,19 @@ namespace LoginServer.Controllers
             if (session == null)
                 return 0;
 
-            uint port = db.Get<uint>("SELECT port FROM process WHERE roomid = {0};", roomID.Value);
+            uint port = db.Get<uint>("SELECT port FROM process WHERE roomid = {0};", roomID);
+
+            if (port != 0 && RoomSession.OpenSessions.ContainsKey(roomID))
+            {
+                var roomSession = RoomSession.OpenSessions[roomID];
+                if (!Process.GetProcesses().Any(p => p.Id == roomSession.PID))
+                {
+                    db.Execute("DELETE FROM process WHERE roomid={0};", roomID);
+                    RoomSession.OpenSessions.Remove(roomID);
+                    port = 0;
+                }
+            }
+
             if (port == 0)
             {
                 port = db.Get<uint>("SELECT MIN(port) FROM port WHERE port NOT IN (SELECT port FROM process)");
@@ -79,7 +91,7 @@ namespace LoginServer.Controllers
                 p.StartInfo.Arguments = string.Format(config.RoomServer.Arguments, port, roomID);
                 p.Start();
 
-                db.Execute("INSERT INTO voa.process (pid, port, roomid) VALUES ({0}, {1}, {2})", (uint)p.Id, port, roomID.Value);
+                db.Execute("INSERT INTO voa.process (pid, port, roomid) VALUES ({0}, {1}, {2})", (uint)p.Id, port, roomID);
             }
 
             return port;
