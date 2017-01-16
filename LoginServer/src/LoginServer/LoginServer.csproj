@@ -13,7 +13,6 @@
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="$(GlobalExclude)" />
     <EmbeddedResource Include="**\*.resx" Exclude="$(GlobalExclude)" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DataBaseInterface.generate.template" />
@@ -78,4 +77,9 @@
       <UserProperties />
     </VisualStudio>
   </ProjectExtensions>
+  <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+  </ItemGroup>
 </Project>
