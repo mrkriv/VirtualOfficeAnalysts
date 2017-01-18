@@ -1,2 +1,2 @@
-cd LoginServer\src\LoginServer
-dotnet bin\netcoreapp1.0\LoginServer.dll
+cd LoginServer\
+dotnet bin\LoginServer.dll

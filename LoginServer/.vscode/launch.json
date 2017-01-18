@@ -6,12 +6,11 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}\\bin\\Debug\\netcoreapp1.0\\LoginServer.dll",
+            "program": "${workspaceRoot}/bin/LoginServer.dll",
             "args": [],
             "cwd": "${workspaceRoot}",
-            "externalConsole": false,
             "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart"
+            "externalConsole": false
         },
         {
             "name": ".NET Core Attach",

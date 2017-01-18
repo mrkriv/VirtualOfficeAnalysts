@@ -1,8 +1,0 @@
-C:\Users\admin\Desktop\LoginServer\bin\Debug\netcoreapp1.0\LoginServer.deps.json
-C:\Users\admin\Desktop\LoginServer\bin\Debug\netcoreapp1.0\LoginServer.runtimeconfig.json
-C:\Users\admin\Desktop\LoginServer\bin\Debug\netcoreapp1.0\LoginServer.runtimeconfig.dev.json
-C:\Users\admin\Desktop\LoginServer\bin\Debug\netcoreapp1.0\LoginServer.dll
-C:\Users\admin\Desktop\LoginServer\bin\Debug\netcoreapp1.0\LoginServer.pdb
-C:\Users\admin\Desktop\LoginServer\obj\Debug\netcoreapp1.0\LoginServer.AssemblyInfo.cs
-C:\Users\admin\Desktop\LoginServer\obj\Debug\netcoreapp1.0\LoginServer.dll
-C:\Users\admin\Desktop\LoginServer\obj\Debug\netcoreapp1.0\LoginServer.pdb

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
+using System.Globalization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 
@@ -12,6 +13,8 @@ namespace LoginServer
     {
         public static void Main(string[] args)
         {
+            System.Globalization.CultureInfo.CurrentCulture = new CultureInfo("en-US");
+            
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseUrls("http://192.168.1.44:5000")

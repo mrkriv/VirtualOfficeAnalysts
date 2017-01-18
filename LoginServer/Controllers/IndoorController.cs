@@ -46,28 +46,43 @@ namespace LoginServer.Controllers
                 session.RoomId);
         }
 
+        [HttpPost("AddObject")]
+        public Shell<uint> AddObject([FromBody]Shell<RoomObject> obj)
+        {
+            return db.Get<uint>(
+                "INSERT INTO room_objects (roomid, content, position_x, position_y, position_z, scale_w, scale_h) VALUES ({0}, '{1}', '{2}', '{3}', '{4}', '{5}', '{6}');" +
+                "SELECT LAST_INSERT_ID();",
+                GetSession().RoomId,
+                obj.Value.Content,
+                obj.Value.Position.X,
+                obj.Value.Position.Y,
+                obj.Value.Position.Z,
+                obj.Value.Scale.X,
+                obj.Value.Scale.Y);
+        }
+
         [HttpPost("UpdateObjectTransform")]
-        public void UpdateObjectTransform([FromBody]Shell<RoomObject> modObject)
+        public void UpdateObjectTransform([FromBody]Shell<RoomObject> obj)
         {
             db.Execute(
                 "UPDATE room_objects SET position_x={2}, position_y={3}, position_z={4}, scale_w={5}, scale_h={6} WHERE uin={1} and roomid={0};",
                 GetSession().RoomId,
-                modObject.Value.UIN,
-                modObject.Value.Position.X,
-                modObject.Value.Position.Y,
-                modObject.Value.Position.Z,
-                modObject.Value.Scale.X,
-                modObject.Value.Scale.Y);
+                obj.Value.UIN,
+                obj.Value.Position.X,
+                obj.Value.Position.Y,
+                obj.Value.Position.Z,
+                obj.Value.Scale.X,
+                obj.Value.Scale.Y);
         }
 
         [HttpPost("UpdateObjectContent")]
-        public void UpdateObjectContent([FromBody]Shell<RoomObject> modObject)
+        public void UpdateObjectContent([FromBody]Shell<RoomObject> obj)
         {
             db.Execute(
                 "UPDATE room_objects SET content={2} WHERE uin={1} and roomid={0};",
                 GetSession().RoomId, 
-                modObject.Value.UIN, 
-                modObject.Value.Content);
+                obj.Value.UIN, 
+                obj.Value.Content);
         }
 
         protected bool CheckLogin()
