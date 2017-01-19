@@ -62,9 +62,9 @@ namespace LoginServer.Controllers
         }
 
         [HttpPost("UpdateObjectTransform")]
-        public void UpdateObjectTransform([FromBody]Shell<RoomObject> obj)
+        public Shell<bool> UpdateObjectTransform([FromBody]Shell<RoomObject> obj)
         {
-            db.Execute(
+            return db.Execute(
                 "UPDATE room_objects SET position_x={2}, position_y={3}, position_z={4}, scale_w={5}, scale_h={6} WHERE uin={1} and roomid={0};",
                 GetSession().RoomId,
                 obj.Value.UIN,
@@ -76,13 +76,21 @@ namespace LoginServer.Controllers
         }
 
         [HttpPost("UpdateObjectContent")]
-        public void UpdateObjectContent([FromBody]Shell<RoomObject> obj)
+        public Shell<bool> UpdateObjectContent([FromBody]Shell<RoomObject> obj)
         {
-            db.Execute(
+           return db.Execute(
                 "UPDATE room_objects SET content={2} WHERE uin={1} and roomid={0};",
                 GetSession().RoomId, 
                 obj.Value.UIN, 
                 obj.Value.Content);
+        }
+
+        [HttpPost("RemoveObject")]
+        public Shell<bool> RemoveObject([FromBody]Shell<uint> uin)
+        {
+            return db.Execute(
+                "DELETE FROM room_objects WHERE uin={1} and roomid={0};",
+                GetSession().RoomId, uin);
         }
 
         protected bool CheckLogin()
