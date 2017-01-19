@@ -39,6 +39,25 @@ namespace LoginServer.Controllers
             return true;
         }
 
+        [HttpPost("RegNew")]
+        public Shell<string> RegNew([FromBody]LoginPassword input)
+        {
+            if(string.IsNullOrEmpty(input.Login) || string.IsNullOrEmpty(input.Password) || string.IsNullOrEmpty(input.Name))
+                return "Invalid data";
+
+            if(input.Password.Length <= 5)
+                return "Password too short";
+
+            if(!db.Execute("INSERT INTO user (login, password, name) VALUES ('{0}', '{1}', '{2}');",
+                input.Login,
+                input.Password,
+                input.Name))
+                return "Login match";
+
+            Login(input);
+            return "true";
+        }
+
         [HttpGet("GetName")]
         public Shell<string> GetName()
         {
