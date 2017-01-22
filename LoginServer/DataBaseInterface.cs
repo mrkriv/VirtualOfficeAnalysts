@@ -17,8 +17,15 @@ namespace LoginServer
 
         public bool Execute(string query, params object[] args)
         {
-            using (MySqlCommand cmd = new MySqlCommand(string.Format(query, args), Connection))
-                return cmd.ExecuteNonQuery() != 0;
+            try
+            {
+                using (MySqlCommand cmd = new MySqlCommand(string.Format(query, args), Connection))
+                    return cmd.ExecuteNonQuery() != 0;
+            }
+            catch(MySqlException)
+            {
+                return false;
+            }
         }
 
         public T Get<T>(string query, params object[] args)
@@ -31,14 +38,21 @@ namespace LoginServer
             T result = default(T);
             success = false;
 
-            using (var cmd = new MySqlCommand(string.Format(query, args), Connection))
-            using (var reader = cmd.ExecuteReader())
-                if (reader != null && reader.HasRows)
-                {
-                    reader.Read();
-                    result = ReadValue<T>(reader, 0);
-                    success = true;
+            try
+            {
+                using (var cmd = new MySqlCommand(string.Format(query, args), Connection))
+                using (var reader = cmd.ExecuteReader())
+                    if (reader != null && reader.HasRows)
+                    {
+                        reader.Read();
+                        result = ReadValue<T>(reader, 0);
+                        success = true;
+                    }
                 }
+            catch(MySqlException)
+            {
+                success = false;
+            }
 
             return result;
         }

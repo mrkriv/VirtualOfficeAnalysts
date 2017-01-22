@@ -6,6 +6,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBlueprintJSONRequestResultDelegate, UJsonFieldData*, Json, bool, Success);
 
+DECLARE_LOG_CATEGORY_EXTERN(JSONRequest, Log, All);
+
 UCLASS(BlueprintType, Blueprintable, Category = "JSON")
 class VR_API UJSONRequestCallbackProxy : public UOnlineBlueprintCallProxyBase
 {
@@ -21,6 +23,7 @@ private:
 	static FString Port;
 	static FString Postfix;
 	static FString UserAgent;
+	static bool IsPrintToLog;
 
 	void OnCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
@@ -42,6 +45,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "JSON|Request")
 	static void SetJSONUserAgent(const FString& userAgent);
+	
+	UFUNCTION(BlueprintCallable, Category = "JSON|Request")
+	static void SetJSONPrintToLog(const bool isPrintToLog);
 	
 	UFUNCTION(BlueprintPure, Category = "JSON|Request")
 	static FString GetJSONServerUrl();

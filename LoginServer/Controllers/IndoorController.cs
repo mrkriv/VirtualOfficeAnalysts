@@ -79,7 +79,7 @@ namespace LoginServer.Controllers
         public Shell<bool> UpdateObjectContent([FromBody]Shell<RoomObject> obj)
         {
            return db.Execute(
-                "UPDATE room_objects SET content={2} WHERE uin={1} and roomid={0};",
+                "UPDATE room_objects SET content='{2}' WHERE uin={1} and roomid={0};",
                 GetSession().RoomId, 
                 obj.Value.UIN, 
                 obj.Value.Content);

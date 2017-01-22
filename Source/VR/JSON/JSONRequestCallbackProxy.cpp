@@ -1,10 +1,13 @@
 #include "VR.h"
 #include "JSONRequestCallbackProxy.h"
 
+DEFINE_LOG_CATEGORY(JSONRequest);
+
 FString UJSONRequestCallbackProxy::Host = "localhost";
 FString UJSONRequestCallbackProxy::Port = "80";
 FString UJSONRequestCallbackProxy::Postfix = "";
 FString UJSONRequestCallbackProxy::UserAgent = "UnrealEngine4Client/1.0";
+bool UJSONRequestCallbackProxy::IsPrintToLog = false;
 
 UJSONRequestCallbackProxy*
 UJSONRequestCallbackProxy::JSONGetRequest(UObject* WorldContextObject, const FString& url)
@@ -29,7 +32,11 @@ UJSONRequestCallbackProxy::JSONPostRequest(UObject* WorldContextObject, UJsonFie
 UJSONRequestCallbackProxy*
 UJSONRequestCallbackProxy::JSONServerGetRequest(UObject* WorldContextObject, const FString& request)
 {
-	FString url = GetJSONServerUrl() + request;
+	FString url = GetJSONServerUrl() + request + "/";
+
+	if(!url.EndsWith("/", ESearchCase::CaseSensitive))
+		url += "/";
+
 	return JSONGetRequest(WorldContextObject, url);
 }
 
@@ -37,6 +44,10 @@ UJSONRequestCallbackProxy*
 UJSONRequestCallbackProxy::JSONServerPostRequest(UObject* WorldContextObject, UJsonFieldData* json, const FString& request)
 {
 	FString url = GetJSONServerUrl() + request;
+
+	if(!url.EndsWith("/", ESearchCase::CaseSensitive))
+		url += "/";
+
 	return JSONPostRequest(WorldContextObject, json, url);
 }
 
@@ -66,6 +77,11 @@ void UJSONRequestCallbackProxy::SetJSONUserAgent(const FString& userAgent)
 	UserAgent = userAgent;
 }
 
+void UJSONRequestCallbackProxy::SetJSONPrintToLog(const bool isPrintToLog)
+{
+	IsPrintToLog = isPrintToLog;
+}
+
 void UJSONRequestCallbackProxy::Activate()
 {
     UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject);
@@ -80,12 +96,21 @@ void UJSONRequestCallbackProxy::Activate()
 
 	if(JsonRequestObject.IsValid())
 	{
-		HttpRequest->SetContentAsString(JsonRequestObject->ToString());
+		FString jsonString = JsonRequestObject->ToString();
+		HttpRequest->SetContentAsString(jsonString);
 		HttpRequest->SetVerb("POST");
+
+		if(IsPrintToLog)
+			UE_LOG(JSONRequest, Log, TEXT("POST: %s\n%s"), *URL, *jsonString);
 	}
 	else
+	{
 		HttpRequest->SetVerb("GET");
 
+		if(IsPrintToLog)
+			UE_LOG(JSONRequest, Log, TEXT("GET: %s"), *URL);
+	}
+	
 	JsonResultObject->AddToRoot();
 	HttpRequest->ProcessRequest();
 }
