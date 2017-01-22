@@ -1,14 +1,6 @@
-// Copyright 1998-2013 Epic Games, Inc. All Rights Reserved.
-
 #include "VR.h"
 #include "JsonFieldData.h"
 
-//////////////////////////////////////////////////////////////////////////
-// UJsonFieldData
-
-/**
-* Constructor
-*/
 UJsonFieldData::UJsonFieldData()
 {
 	Reset();
@@ -16,10 +8,8 @@ UJsonFieldData::UJsonFieldData()
 
 UJsonFieldData* UJsonFieldData::Create(UObject* WorldContextObject)
 {
-	// Get the world object from the context
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject);
 
-	// Construct the object and return it
 	UJsonFieldData* fieldData = NewObject<UJsonFieldData>();
 	fieldData->contextObject = WorldContextObject;
 	return fieldData;
@@ -29,85 +19,52 @@ void UJsonFieldData::WriteObject(TSharedRef<TJsonWriter<TCHAR>> writer, FString 
 {
 	if (value->Type == EJson::Null)
 	{
-		// Write simple entry, don't a key when it isn't set
 		if (key.Len() > 0)
-		{
 			writer->WriteNull(key);
-		}
 		else
-		{
 			writer->WriteNull();
-		}
 	}
 	if (value->Type == EJson::String)
 	{
-		// Write simple string entry, don't a key when it isn't set
 		if (key.Len() > 0)
-		{
 			writer->WriteValue(key, value->AsString());
-		}
 		else
-		{
 			writer->WriteValue(value->AsString());
-		}
 	}
 	if (value->Type == EJson::Boolean)
 	{
-		// Write simple entry, don't a key when it isn't set
 		if (key.Len() > 0)
-		{
 			writer->WriteValue(key, value->AsBool());
-		}
 		else
-		{
 			writer->WriteValue(value->AsBool());
-		}
 	}
 	if (value->Type == EJson::Number)
 	{
-		// Write simple entry, don't a key when it isn't set
 		if (key.Len() > 0)
-		{
 			writer->WriteValue(key, value->AsNumber());
-		}
 		else
-		{
 			writer->WriteValue(value->AsNumber());
-		}
 	}
 	else if (value->Type == EJson::Object)
 	{
-		// Write object entry
 		if (key.Len() > 0)
-		{
 			writer->WriteObjectStart(key);
-		}
 		else
-		{
 			writer->WriteObjectStart();
-		}
 
-		// Loop through all the values in the object data
 		TSharedPtr<FJsonObject> objectData = value->AsObject();
 		for (auto objectValue = objectData->Values.CreateIterator(); objectValue; ++objectValue)
-		{
-			// Using recursion to write the key and value to the writer
 			WriteObject(writer, objectValue.Key(), objectValue.Value().Get());
-		}
 
 		writer->WriteObjectEnd();
 	}
 	else if (value->Type == EJson::Array)
 	{
-		// Process array entry
 		writer->WriteArrayStart(key);
 
 		TArray<TSharedPtr<FJsonValue>> objectArray = value->AsArray();
 		for (int32 i = 0; i < objectArray.Num(); i++)
-		{
-			// Use recursion with an empty key to process all the values in the array
 			WriteObject(writer, "", objectArray[i].Get());
-		}
 
 		writer->WriteArrayEnd();
 	}
@@ -137,6 +94,32 @@ UJsonFieldData* UJsonFieldData::SetInt(const FString& key, const int32 value)
 	return this;
 }
 
+UJsonFieldData* UJsonFieldData::SetVector(UObject* WorldContextObject, const FString& key, const FVector value)
+{
+    auto World = GEngine->GetWorldFromContextObject(WorldContextObject);
+	auto vec = NewObject<UJsonFieldData>();
+
+	vec->Data->SetNumberField("x", static_cast<double>(value.X));
+	vec->Data->SetNumberField("y", static_cast<double>(value.Y));
+	vec->Data->SetNumberField("z", static_cast<double>(value.Z));
+
+	Data->SetObjectField(*key, vec->Data);
+	return this;
+}
+
+UJsonFieldData* UJsonFieldData::SetVector2D(UObject* WorldContextObject, const FString& key, const FVector2D value)
+{
+    auto World = GEngine->GetWorldFromContextObject(WorldContextObject);
+	auto vec = NewObject<UJsonFieldData>();
+
+	vec->Data->SetNumberField("x", static_cast<double>(value.X));
+	vec->Data->SetNumberField("y", static_cast<double>(value.Y));
+	
+	Data->SetObjectField(*key, vec->Data);
+
+	return this;
+}
+
 UJsonFieldData* UJsonFieldData::SetNull(const FString& key)
 {
 	Data->SetObjectField(*key, NULL);
@@ -153,10 +136,8 @@ UJsonFieldData* UJsonFieldData::SetObjectArray(const FString& key, const TArray<
 {
 	TArray<TSharedPtr<FJsonValue>> *dataArray = new TArray<TSharedPtr<FJsonValue>>();
 
-	// Loop through the array and create new shared FJsonValueObject instances for every FJsonObject
-	for (int32 i = 0; i < objectData.Num(); i++) {
+	for (int32 i = 0; i < objectData.Num(); i++)
 		dataArray->Add(MakeShareable(new FJsonValueObject(objectData[i]->Data)));
-	}
 
 	Data->SetArrayField(*key, *dataArray);
 	return this;
@@ -166,11 +147,8 @@ UJsonFieldData* UJsonFieldData::SetStringArray(const FString& key, const TArray<
 {
 	TArray<TSharedPtr<FJsonValue>> *dataArray = new TArray<TSharedPtr<FJsonValue>>();
 
-	// Loop through the input array and add new shareable FJsonValueString instances to the data array
 	for (int32 i = 0; i < stringData.Num(); i++)
-	{
 		dataArray->Add(MakeShareable(new FJsonValueString(stringData[i])));
-	}
 
 	Data->SetArrayField(*key, *dataArray);
 	return this;
@@ -180,11 +158,8 @@ UJsonFieldData* UJsonFieldData::SetBoolArray(const FString& key, const TArray<bo
 {
 	TArray<TSharedPtr<FJsonValue>> *dataArray = new TArray<TSharedPtr<FJsonValue>>();
 
-	// Loop through the input array and add new shareable FJsonValueString instances to the data array
 	for (int32 i = 0; i < data.Num(); i++)
-	{
 		dataArray->Add(MakeShareable(new FJsonValueBoolean(data[i])));
-	}
 
 	Data->SetArrayField(*key, *dataArray);
 	return this;
@@ -194,11 +169,8 @@ UJsonFieldData* UJsonFieldData::SetFloatArray(const FString& key, const TArray<f
 {
 	TArray<TSharedPtr<FJsonValue>> *dataArray = new TArray<TSharedPtr<FJsonValue>>();
 
-	// Loop through the input array and add new shareable FJsonValueString instances to the data array
 	for (int32 i = 0; i < data.Num(); i++)
-	{
 		dataArray->Add(MakeShareable(new FJsonValueNumber(static_cast<double>(data[i]))));
-	}
 
 	Data->SetArrayField(*key, *dataArray);
 	return this;
@@ -208,11 +180,8 @@ UJsonFieldData* UJsonFieldData::SetIntArray(const FString& key, const TArray<int
 {
 	TArray<TSharedPtr<FJsonValue>> *dataArray = new TArray<TSharedPtr<FJsonValue>>();
 
-	// Loop through the input array and add new shareable FJsonValueString instances to the data array
 	for (int32 i = 0; i < data.Num(); i++)
-	{
 		dataArray->Add(MakeShareable(new FJsonValueNumber(static_cast<double>(data[i]))));
-	}
 
 	Data->SetArrayField(*key, *dataArray);
 	return this;
@@ -222,11 +191,8 @@ UJsonFieldData* UJsonFieldData::SetNullArray(const FString& key, const int32& le
 {
 	TArray<TSharedPtr<FJsonValue>> *dataArray = new TArray<TSharedPtr<FJsonValue>>();
 
-	// Loop through the input array and add new shareable FJsonValueString instances to the data array
 	for (int32 i = 0; i < length; i++)
-	{
 		dataArray->Add(MakeShareable(new FJsonValueNull()));
-	}
 
 	Data->SetArrayField(*key, *dataArray);
 	return this;
@@ -236,21 +202,17 @@ UJsonFieldData* UJsonFieldData::GetObject(const FString& key, bool& success)
 {
 	UJsonFieldData* fieldObj = NULL;
 
-	// Try to get the object field from the data
 	const TSharedPtr<FJsonObject> *outPtr;
 	if (!Data->TryGetObjectField(*key, outPtr))
 	{
-		// Throw an error and return NULL when the key could not be found
 		UE_LOG(LogJson, Error, TEXT("Entry '%s' not found in the field data!"), *key);
 		success = false;
 		return NULL;
 	}
 
-	// Create a new field data object and assign the data
 	fieldObj = UJsonFieldData::Create(contextObject);
 	fieldObj->Data = *outPtr;
 
-	// Return the newly created object
 	success = true;
 	return fieldObj;
 }
@@ -259,25 +221,19 @@ TArray<FString> UJsonFieldData::GetStringArray(const FString& key, bool& success
 {
 	TArray<FString> stringArray;
 
-	// Try to get the array field from the post data
 	const TArray<TSharedPtr<FJsonValue>> *arrayPtr;
 	if (Data->TryGetArrayField(*key, arrayPtr))
 	{
-		// Iterate through the array and use the string value from all the entries
 		for (int32 i = 0; i < arrayPtr->Num(); i++)
-		{
 			stringArray.Add((*arrayPtr)[i]->AsString());
-		}
 		success = true;
 	}
 	else
 	{
-		// Throw an error when the entry could not be found in the field data
 		UE_LOG(LogJson, Error, TEXT("Array entry '%s' not found in the field data!"), *key);
 		success = false;
 	}
 
-	// Return the array, if unsuccessful the array will be empty
 	return stringArray;
 }
 
@@ -285,25 +241,19 @@ TArray<bool> UJsonFieldData::GetBoolArray(const FString& key, bool& success)
 {
 	TArray<bool> array;
 
-	// Try to get the array field from the post data
 	const TArray<TSharedPtr<FJsonValue>> *arrayPtr;
 	if (Data->TryGetArrayField(*key, arrayPtr))
 	{
-		// Iterate through the array and use the bool value from all the entries
 		for (int32 i = 0; i < arrayPtr->Num(); i++)
-		{
 			array.Add((*arrayPtr)[i]->AsBool());
-		}
 		success = true;
 	}
 	else
 	{
-		// Throw an error when the entry could not be found in the field data
 		UE_LOG(LogJson, Error, TEXT("Array entry '%s' not found in the field data!"), *key);
 		success = false;
 	}
 
-	// Return the array, if unsuccessful the array will be empty
 	return array;
 }
 
@@ -311,51 +261,38 @@ TArray<int32> UJsonFieldData::GetIntArray(const FString& key, bool& success)
 {
 	TArray<int32> array;
 
-	// Try to get the array field from the post data
 	const TArray<TSharedPtr<FJsonValue>> *arrayPtr;
 	if (Data->TryGetArrayField(*key, arrayPtr))
 	{
-		// Iterate through the array and use the bool value from all the entries
 		for (int32 i = 0; i < arrayPtr->Num(); i++)
-		{
 			array.Add(static_cast<int32>((*arrayPtr)[i]->AsNumber()));
-		}
 		success = true;
 	}
 	else
 	{
-		// Throw an error when the entry could not be found in the field data
 		UE_LOG(LogJson, Error, TEXT("Array entry '%s' not found in the field data!"), *key);
 		success = false;
 	}
 
-	// Return the array, if unsuccessful the array will be empty
 	return array;
 }
 
 TArray<float> UJsonFieldData::GetFloatArray(const FString& key, bool& success)
 {
 	TArray<float> array;
-
-	// Try to get the array field from the post data
 	const TArray<TSharedPtr<FJsonValue>> *arrayPtr;
 	if (Data->TryGetArrayField(*key, arrayPtr))
 	{
-		// Iterate through the array and use the bool value from all the entries
 		for (int32 i = 0; i < arrayPtr->Num(); i++)
-		{
 			array.Add(static_cast<float>((*arrayPtr)[i]->AsNumber()));
-		}
 		success = true;
 	}
 	else
 	{
-		// Throw an error when the entry could not be found in the field data
 		UE_LOG(LogJson, Error, TEXT("Array entry '%s' not found in the field data!"), *key);
 		success = false;
 	}
 
-	// Return the array, if unsuccessful the array will be empty
 	return array;
 }
 
@@ -363,11 +300,9 @@ TArray<UJsonFieldData*> UJsonFieldData::GetObjectArray(UObject* WorldContextObje
 {
 	TArray<UJsonFieldData*> objectArray;
 
-	// Try to fetch and assign the array to the array pointer
 	const TArray<TSharedPtr<FJsonValue>> *arrayPtr;
 	if (Data->TryGetArrayField(*key, arrayPtr))
 	{
-		// Iterate through the input array and create new post data objects for every entry and add them to the objectArray
 		for (int32 i = 0; i < arrayPtr->Num(); i++)
 		{
 			UJsonFieldData* pageData = Create(WorldContextObject);
@@ -378,12 +313,10 @@ TArray<UJsonFieldData*> UJsonFieldData::GetObjectArray(UObject* WorldContextObje
 	}
 	else
 	{
-		// Throw an error, since the value with the supplied key could not be found
 		UE_LOG(LogJson, Error, TEXT("Array entry '%s' not found in the field data!"), *key);
 		success = false;
 	}
 
-	// Return the array, will be empty if unsuccessful
 	return objectArray;
 }
 
@@ -396,7 +329,6 @@ TArray<FString> UJsonFieldData::GetObjectKeys(UObject* WorldContextObject)
 		stringArray.Add((*currJsonValue).Key);
 	}
 
-	// Return the array, will be empty if unsuccessful
 	return stringArray;
 }
 
@@ -404,7 +336,6 @@ FString UJsonFieldData::GetString(const FString& key, bool& success) const
 {
 	FString outString;
 
-	// If the current post data isn't valid, return an empty string
 	if (!Data->TryGetStringField(*key, outString))
 	{
 		UE_LOG(LogJson, Error, TEXT("String entry '%s' not found in the field data!"), *key);
@@ -420,7 +351,6 @@ bool UJsonFieldData::GetBool(const FString& key, bool& success) const
 {
 	bool value;
 
-	// If the current post data isn't valid, return an empty string
 	if (!Data->TryGetBoolField(*key, value))
 	{
 		UE_LOG(LogJson, Error, TEXT("Boolean entry '%s' not found in the field data!"), *key);
@@ -436,7 +366,6 @@ int32 UJsonFieldData::GetInt(const FString& key, bool& success) const
 {
 	int32 value;
 
-	// If the current post data isn't valid, return an empty string
 	if (!Data->TryGetNumberField(*key, value))
 	{
 		UE_LOG(LogJson, Error, TEXT("Number entry '%s' not found in the field data!"), *key);
@@ -452,7 +381,6 @@ float UJsonFieldData::GetFloat(const FString& key, bool& success) const
 {
 	double value;
 
-	// If the current post data isn't valid, return an empty string
 	if (!Data->TryGetNumberField(*key, value))
 	{
 		UE_LOG(LogJson, Error, TEXT("Number entry '%s' not found in the field data!"), *key);
@@ -464,9 +392,27 @@ float UJsonFieldData::GetFloat(const FString& key, bool& success) const
 	return static_cast<float>(value);
 }
 
+FVector UJsonFieldData::GetVector(const FString& key, bool& success)
+{
+	auto vec = GetObject(key, success);
+	float x = vec->GetFloat("x", success);
+	float y = vec->GetFloat("y", success);
+	float z = vec->GetFloat("z", success);
+
+	return FVector(x, y, z);
+}
+
+FVector2D UJsonFieldData::GetVector2D(const FString& key, bool& success)
+{
+	auto vec = GetObject(key, success);
+	float x = vec->GetFloat("x", success);
+	float y = vec->GetFloat("y", success);
+	
+	return FVector2D(x, y);
+}
+
 bool UJsonFieldData::GetIsNull(const FString& key, bool& success) const
 {
-	// If the current post data isn't valid, return an empty string
 	if (!Data->HasField(key))
 	{
 		UE_LOG(LogJson, Error, TEXT("Number entry '%s' not found in the field data!"), *key);
@@ -480,14 +426,9 @@ bool UJsonFieldData::GetIsNull(const FString& key, bool& success) const
 
 void UJsonFieldData::Reset()
 {
-	// If the post data is valid
 	if (Data.IsValid())
-	{
-		// Clear the current post data
 		Data.Reset();
-	}
 
-	// Create a new JSON object
 	Data = MakeShareable(new FJsonObject());
 }
 
