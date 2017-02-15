@@ -15,10 +15,6 @@
 	],
 	"Plugins": [
 		{
-			"Name": "GoogleVRHMD",
-			"Enabled": true
-		},
-		{
 			"Name": "Paper2D",
 			"Enabled": false
 		},
@@ -35,10 +31,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "SteamVR",
-			"Enabled": false
-		},
-		{
 			"Name": "GearVR",
 			"Enabled": false
 		},
@@ -46,7 +38,15 @@
 			"Name": "VaRestPlugin",
 			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/e47be161e7a24e928560290abd5dcc4f"
-		}
+		},
+		{
+			"Name": "GoogleVRHMD",
+			"Enabled": true
+		},
+		{
+			"Name": "SteamVR",
+			"Enabled": true
+		},
 	],
 	"TargetPlatforms": [
 		"Android",
